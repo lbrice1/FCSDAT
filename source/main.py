@@ -43,6 +43,7 @@ L_c         = 0.5       #mgPt/cm^2
 
 variables = np.asarray([SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c])
 var_names = ['SH2', 'SO2', 'T', 'P', 'IEC_mem', 'IEC_io', 'delta_mem', 'delta_io', 'CO_H2', 'L_c']
+
 #Initialize Fitted parameters
 i0_an_H2_ref  = 0.144 #A/cm^2
 i0_cat_ref    = 2.63e-8 #A/cm^2
@@ -101,7 +102,6 @@ while any(t < 0 for t in gsa.flatten()):
 
     gsa = fuelcell1.gsa(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, 
                         delta_io, CO_H2, L_c, params, N, params_names)
-    print('I tried')
     
 fuelcell1.plotgsa(gsa, params_names, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, 
                   delta_io, CO_H2, L_c, params)
@@ -196,24 +196,7 @@ print("Time for Jaya - Sequential Completed")
 print("--- %s seconds ---" % (time.time() - lap_time))
 lap_time = time.time()
 
-#Perform Jaya directly
-# for j in range(w):
-    
-#     k4 = 7
-#     gsa_params = fuelcell1.get_params(gsa, k4, params_base)
-#     params_names4 = gsa_params[0]
-#     params = gsa_params[1]
-    
-#     fuelcell1.M1 = (fuelcell1.sampling_matrix(params, N, u).transpose())
-    
-#     g4[j, :] = fuelcell1.jaya(fuelcell1.M1, N, I, SH2, SO2, T, P, IEC_mem, DF_io, delta_mem, 
-#                               delta_io, CO_H2, L_c, params, params_names1, max_it, tol, r)
-
 g4_mean = np.mean(g4, axis = 0)
-
-print('Jaya - Direct Completed')
-print("Time for Jaya - Direct Completed")
-print("--- %s seconds ---" % (time.time() - lap_time))
 
 #Obtain standard error of the mean
 g1_sem = np.zeros((max_it + k1 + 1))
@@ -228,25 +211,20 @@ g3_sem = np.zeros((max_it + k3 + 1))
 for j in range((max_it + k3 + 1)):
     g3_sem[j] = sps.sem(g3[:, j], axis = 0)
     
-# g4_sem = np.zeros((max_it + k4 + 1))
-# for j in range((max_it + k4 + 1)):
-#     g4_sem[j] = sps.sem(g4[:, j], axis = 0)
     
 #Obtain confidence interva limits
 h1 = g1_sem*sps.t.ppf((1 + confidence) / 2, w - 1)
 h2 = g2_sem*sps.t.ppf((1 + confidence) / 2, w - 1)
 h3 = g3_sem*sps.t.ppf((1 + confidence) / 2, w - 1)
-# h4 = g4_sem*sps.t.ppf((1 + confidence) / 2, w - 1)
+
 #Plot results Confidence intervals
 g1_u = g1_mean + h1
 g2_u = g2_mean + h2
 g3_u = g3_mean + h3
-# g4_u = g4_mean + h4
 
 g1_l = g1_mean - h1
 g2_l = g2_mean - h2
 g3_l = g3_mean - h3
-# g4_l = g4_mean - h4
 
 obj_func_values1 = g1_mean[k1:-1]
 obj_func_values1_u = g1_u[k1:-1]
@@ -259,11 +237,6 @@ obj_func_values2_l = g2_l[k2:-1]
 obj_func_values3 = g3_mean[k3:-1]
 obj_func_values3_u = g3_u[k3:-1]
 obj_func_values3_l = g3_l[k3:-1]
-
-# obj_func_values4 = g4_mean[k4:-1]
-# obj_func_values4_u = g4_u[k4:-1]
-# obj_func_values4_l = g4_l[k4:-1]
-
 
 x_coord = np.arange(1, max_it + 1)
 
@@ -300,56 +273,56 @@ params = g3_mean[0:k3]
 
 polCurves = fuelcell1.showFit(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
 
-#Global sensitivity analysis of variables
+Global sensitivity analysis of variables
 
-# N = 100
-# u = 0.4
+N = 100
+u = 0.4
 
-# #Perform GSA
-# print('Performing GSA...')
+#Perform GSA
+print('Performing GSA...')
 
-# #Build the random matrices M1, M2, M3 using Monte Carlo
-# fuelcell1.M1 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
-# fuelcell1.M2 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
-# fuelcell1.M3 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+#Build the random matrices M1, M2, M3 using Monte Carlo
+fuelcell1.M1 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+fuelcell1.M2 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+fuelcell1.M3 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
 
-# gsaV = fuelcell1.gsaV(I, variables, params, N, params_names3)
+gsaV = fuelcell1.gsaV(I, variables, params, N, params_names3)
 
-# while any(t < 0 for t in gsaV.flatten()):
-#     fuelcell1.M1 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
-#     fuelcell1.M2 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
-#     fuelcell1.M3 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+while any(t < 0 for t in gsaV.flatten()):
+    fuelcell1.M1 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+    fuelcell1.M2 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+    fuelcell1.M3 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
     
-#     gsaV = fuelcell1.gsaV(I, variables, params, N, params_names3)
+    gsaV = fuelcell1.gsaV(I, variables, params, N, params_names3)
     
-#     print('I tried')
+    print('I tried')
     
-# fuelcell1.plotgsaV(gsaV, var_names, params_names3, I, SH2, SO2, T, P, 
-#                   IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params)
+fuelcell1.plotgsaV(gsaV, var_names, params_names3, I, SH2, SO2, T, P, 
+                  IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params)
 
-# print('GSAV completed')
-# print("Time for GSAV")
-# print("--- %s seconds ---" % (time.time() - start_time))
-# lap_time = time.time()
+print('GSAV completed')
+print("Time for GSAV")
+print("--- %s seconds ---" % (time.time() - start_time))
+lap_time = time.time()
 
-# #- --------------------------------------------------------------------------|
-
-# #Plot exploration with optimized parameters
-
-# polCurves = fuelcell1.exploreConfigs(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
-
-# print("Total time elapsed")
-# print("--- %s seconds ---" % (time.time() - start_time))
 #- --------------------------------------------------------------------------|
 
-#Generate dataset for clustering---------------------------------------------|
+#Plot exploration with optimized parameters
 
-# p_size = 6000
-# s_size = 5000
-# interval = [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]
-# polcurves = fuelcell1.data_gen(p_size, 
-#                                s_size, params, 
-#                                params_names3, 
-#                                interval)
+polCurves = fuelcell1.exploreConfigs(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
 
-##--------------------------------End of main--------------------------------##
+print("Total time elapsed")
+print("--- %s seconds ---" % (time.time() - start_time))
+- --------------------------------------------------------------------------|
+
+Generate dataset for clustering---------------------------------------------|
+
+p_size = 6000
+s_size = 5000
+interval = [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]
+polcurves = fuelcell1.data_gen(p_size, 
+                               s_size, params, 
+                               params_names3, 
+                               interval)
+
+#--------------------------------End of main--------------------------------##

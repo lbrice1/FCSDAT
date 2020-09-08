@@ -9,18 +9,13 @@ import numpy as np
 from numpy import sqrt, exp, log
 import matplotlib.pyplot as plt
 import pandas as pd
-#from numba import jit
 import random
 from datetime import date
 
 
 from membrane import conductivityMem
 from membrane import conductivityIo
-#from membrane import m_model
 from data_load import data_load
-
-
-
 
 class Fuelcell:
     
@@ -121,7 +116,7 @@ class Fuelcell:
             NCO     = (SH2 - 1)*I[k]/zH2/F*CO_H2    #mol/s
             NO2     = (SO2 - 1)*I[k]/zO2/F          #mol/s
             NH2Ocat = I[k]/zH2O/F                   #mol/s
-            NCO2an  = I[k]/zH2/F*CO_H2               #mol/s
+            NCO2an  = I[k]/zH2/F*CO_H2              #mol/s
                             
             nH2an           = NH2/A         #mol/s-cm^2
             nCOan           = NCO/A         #mol/s-cm^2
@@ -147,18 +142,18 @@ class Fuelcell:
                     
             m_io      = 0.0902*IEC_io + 0.0352
             
-            D_O2_PBI     = (1.0e-6)*exp(-(a_D*m_io**2-b_D*m_io+c_D)/T) #Reference value is 5.0e-9
+            D_O2_PBI     = (1.0e-6)*exp(-(a_D*m_io**2-b_D*m_io+c_D)/T) 
             D_H2_PBI     = 2*D_O2_PBI
                                                                                                                             
             
-            H_O2_PBI     = (1.0e-6)*exp(-(a_H*m_io**2-b_H*m_io+c_H)/T) #Reference value is 4.0e-7
+            H_O2_PBI     = (1.0e-6)*exp(-(a_H*m_io**2-b_H*m_io+c_H)/T)
             H_H2_PBI     = 4*H_O2_PBI
             
             i0_an_H2     = ((PH2*H_H2_PBI/CH2_0_ref)**0.5)*a_c*L_c*exp(-E_c_H2/R1/Tan*(1 - Tan/433))*i0_an_H2_ref*exp(-eta*(1 - m_io)) #A/cm^2 #Corrected using Barbir's book
             i0_cat       = ((PO2*H_O2_PBI/CO2_0_ref)**1)*a_c*L_c*exp(-E_c_O2/R1/Tcat*(1 - Tcat/423))*i0_cat_ref*exp(-eta*(1 - m_io))   #A/cm^2 #Correction for phosphoric acid, from Cheddie et al.
                                                                                                                         
             if CO_H2 > 0:
-                thetaCO  = 19.9*exp((-7.69e-3)*Tan) + 0.085*log(CO_H2) #Dhar et al.
+                thetaCO  = 19.9*exp((-7.69e-3)*Tan) + 0.085*log(CO_H2) 
             else:
                 thetaCO  = 0
             
@@ -177,8 +172,8 @@ class Fuelcell:
             Econ_i        = Econ_an + Econ_cat      #V
             
             sigma_mem    = (conductivityMem((T - 273), IEC_mem)).item()/1000             #S/cm
-            sigma_io     = (conductivityIo((T - 273), IEC_io)).item()/1000          #S/cm
-            Eohm_i       = delta_mem*I[k]/A/sigma_mem + 2*delta_io*I[k]/A/sigma_io    #V
+            sigma_io     = (conductivityIo((T - 273), IEC_io)).item()/1000              #S/cm
+            Eohm_i       = delta_mem*I[k]/A/sigma_mem + 2*delta_io*I[k]/A/sigma_io      #V
             
             E_i          = Eoc_i - Eact_i - Econ_i - Eohm_i   #V
             E_i_up       = E_i + self.f0
@@ -205,8 +200,6 @@ class Fuelcell:
             fig, ax1 = plt.subplots(figsize = (15, 11))
             ax1.plot(I/A, E, label = 'Model', linewidth = 3, color = 'teal')
             ax1.fill_between(np.reshape(I/A, (17,)), E_up, E_low, color = 'teal', alpha = 0.2)
-            # ax1.plot(I/A, E_up, label = '+ SE', linewidth = 1, color = 'teal')
-            # ax1.plot(I/A, E_low, label = '- SE', linewidth = 1, color = 'teal')
             ax1.scatter(J1, E_exp1, label = 'Experimental (220 °C, 1.6 atm)', marker = 'D', color = 'limegreen')
             
             plt.ylim(0, 1.0)
@@ -275,7 +268,6 @@ class Fuelcell:
         for ip in range(1, overpotential):
             for p in range(len(tags)):
                 plt.plot(I/self.A, polCurves[p, ip, :], linestyle = linestyle[ip], linewidth = 3, color = colormap[p])
-                #labels.append(reverseoverpotentialsLabelsDict[ip] + temp[p])
         for p in range(len(tags)):
             plt.fill_between(np.reshape(I/self.A, (len(I),)), polCurves[p, 5, :], polCurves[p, 6, :], color = colormap[p], alpha = 0.2)
             labels.append('Model ' + temp[p])
@@ -398,7 +390,6 @@ class Fuelcell:
         plt.savefig('Exploration.pdf') 
         plt.show()
         
-
         return polCurves
     
     
@@ -485,7 +476,6 @@ class Fuelcell:
             
             if np.isnan(g_i):
                 g_i = self.f0
-
             g[n] = g_i
         g = np.asarray(g)
     
@@ -498,7 +488,6 @@ class Fuelcell:
             
             if np.isnan(g_i):
                 g_i = self.f0
-    
             g[n] = g_i
         g = np.asarray(g)
     
@@ -755,9 +744,7 @@ class Fuelcell:
         plt.savefig('gsaV.pdf') 
         plt.savefig('gsaV.png') 
         plt.show()
-            
-   
-        
+
         return True
     
     def jaya(self, M, M3, N, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names, max_it, tol, r = 0.1):
