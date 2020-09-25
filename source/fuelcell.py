@@ -646,7 +646,7 @@ class Fuelcell:
                       params_names[6]: 6}
         reverseparamsDict = {v: k for k, v in paramsDict.items()}
         
-        params_names_labels = ['$i_{0, an}^{ref}$', '$i_{0, cat}^{ref}$', '$\u03B1_{an}$', '$\u03B1_{cat}$', '\u03B7', 'B', '$\u039A_{cat}$']
+        params_names_labels = ['$i_{0, an}^{ref}$', '$i_{0, cat}^{ref}$', '$\u03B1_{an}$', '$\u03B1_{cat}$', '\u03B3', 'B', '$\u039A_{cat}$']
         paramsDictLabels = {params_names_labels[0]: 0, 
                             params_names_labels[1]: 1, 
                             params_names_labels[2]: 2, 

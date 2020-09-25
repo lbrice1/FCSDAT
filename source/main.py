@@ -273,7 +273,7 @@ params = g3_mean[0:k3]
 
 polCurves = fuelcell1.showFit(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
 
-Global sensitivity analysis of variables
+#Global sensitivity analysis of variables
 
 N = 100
 u = 0.4
@@ -313,9 +313,9 @@ polCurves = fuelcell1.exploreConfigs(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_m
 
 print("Total time elapsed")
 print("--- %s seconds ---" % (time.time() - start_time))
-- --------------------------------------------------------------------------|
+#- --------------------------------------------------------------------------|
 
-Generate dataset for clustering---------------------------------------------|
+#Generate dataset for clustering---------------------------------------------|
 
 p_size = 6000
 s_size = 5000
