@@ -298,7 +298,7 @@ class Fuelcell:
         plt.rcParams['font.family']='sans-serif'
         tnfont={'fontname':'Helvetica'}
         plt.rcParams['font.size']=35
-        plt.xlabel('Current intensity $(A/cm^2)$', fontsize = 30)
+        plt.xlabel('Current density $(A/cm^2)$', fontsize = 30)
         plt.ylabel('Voltage $(V)$', fontsize = 30)
         plt.tick_params(direction = 'in', labelsize = 'small')
         plt.tight_layout()

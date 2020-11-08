@@ -319,10 +319,10 @@ print("--- %s seconds ---" % (time.time() - start_time))
 
 p_size = 6000
 s_size = 5000
-interval = [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]
+interval = [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0, 0]
 polcurves = fuelcell1.data_gen(p_size, 
-                               s_size, params, 
-                               params_names3, 
-                               interval)
+                                s_size, params, 
+                                params_names3, 
+                                interval)
 
 #--------------------------------End of main--------------------------------##

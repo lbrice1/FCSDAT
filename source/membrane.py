@@ -103,6 +103,7 @@ def visualize(v1_min1, v1_max1, v2_min1, v2_max1, v1_min2, v1_max2, v2_min2, v2_
     
     axs.scatter(y, sigma_pred, s = 500, facecolors='none', edgecolors='r')
     axs.plot(y, y, color = 'k')
+    axs.text(0.05, 0.95, '(a)', fontsize = 'x-large', horizontalalignment='left',verticalalignment='top', transform=axs.transAxes)
     axs.set_xlabel('$\kappa^{H^{+}}_{measured}$ (mS/cm)', fontsize = 'x-large', labelpad = 10)
     axs.set_ylabel('$\kappa^{H^{+}}_{predicted}$ (mS/cm)', fontsize = 'x-large', labelpad = 10)
     axs.set_title(' ')
@@ -110,6 +111,8 @@ def visualize(v1_min1, v1_max1, v2_min1, v2_max1, v1_min2, v1_max2, v2_min2, v2_
     
     axs = fig.add_subplot(2, 2, 3)
     axs.scatter(y0_io, sigma_io_pred, s = 500, facecolors='none', edgecolors='r')
+    axs.plot(y0_io, y0_io, color = 'k')
+    axs.text(0.05, 0.95, '(c)', fontsize = 'x-large', horizontalalignment='left',verticalalignment='top', transform=axs.transAxes)
     axs.set_xlabel('$\kappa^{H^{+}}_{measured}$ (mS/cm)', fontsize = 'x-large', labelpad = 10)
     axs.set_ylabel('$\kappa^{H^{+}}_{predicted}$ (mS/cm)', fontsize = 'x-large', labelpad = 10)
     axs.set_title(' ')
