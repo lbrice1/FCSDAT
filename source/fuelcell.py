@@ -215,7 +215,8 @@ class Fuelcell:
             plt.savefig('Operation.pdf')
             plt.savefig('Operation.png')
             plt.show()
-        
+            
+
         return Eoc, E, Eact, Econ, Eohm, E_up, E_low
     
     def showFit(self, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names, graphs = False, overpotential = 'E'):
@@ -305,6 +306,7 @@ class Fuelcell:
         plt.savefig('Fitness.pdf') 
         plt.savefig('Fitness.png', transparent = True)
         plt.show()
+        
         return polCurves
     
     def exploreConfigs(self, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names, graphs = False, overpotential = 'E'):

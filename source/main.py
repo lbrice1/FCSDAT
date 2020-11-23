@@ -269,60 +269,60 @@ print('Jaya completed')
     
 #- --------------------------------------------------------------------------|
 
-params = g3_mean[0:k3]
+# params = g3_mean[0:k3]
 
-polCurves = fuelcell1.showFit(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
+# polCurves = fuelcell1.showFit(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
 
-#Global sensitivity analysis of variables
+# #Global sensitivity analysis of variables
 
-N = 100
-u = 0.4
+# N = 100
+# u = 0.4
 
-#Perform GSA
-print('Performing GSA...')
+# #Perform GSA
+# print('Performing GSA...')
 
-#Build the random matrices M1, M2, M3 using Monte Carlo
-fuelcell1.M1 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
-fuelcell1.M2 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
-fuelcell1.M3 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+# #Build the random matrices M1, M2, M3 using Monte Carlo
+# fuelcell1.M1 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+# fuelcell1.M2 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+# fuelcell1.M3 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
 
-gsaV = fuelcell1.gsaV(I, variables, params, N, params_names3)
+# gsaV = fuelcell1.gsaV(I, variables, params, N, params_names3)
 
-while any(t < 0 for t in gsaV.flatten()):
-    fuelcell1.M1 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
-    fuelcell1.M2 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
-    fuelcell1.M3 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+# while any(t < 0 for t in gsaV.flatten()):
+#     fuelcell1.M1 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+#     fuelcell1.M2 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
+#     fuelcell1.M3 = (fuelcell1.sampling_matrix(variables, N, u).transpose())
     
-    gsaV = fuelcell1.gsaV(I, variables, params, N, params_names3)
+#     gsaV = fuelcell1.gsaV(I, variables, params, N, params_names3)
     
-    print('I tried')
+#     print('I tried')
     
-fuelcell1.plotgsaV(gsaV, var_names, params_names3, I, SH2, SO2, T, P, 
-                  IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params)
+# fuelcell1.plotgsaV(gsaV, var_names, params_names3, I, SH2, SO2, T, P, 
+#                   IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params)
 
-print('GSAV completed')
-print("Time for GSAV")
-print("--- %s seconds ---" % (time.time() - start_time))
-lap_time = time.time()
+# print('GSAV completed')
+# print("Time for GSAV")
+# print("--- %s seconds ---" % (time.time() - start_time))
+# lap_time = time.time()
 
 #- --------------------------------------------------------------------------|
 
 #Plot exploration with optimized parameters
 
-polCurves = fuelcell1.exploreConfigs(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
+# polCurves = fuelcell1.exploreConfigs(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
 
-print("Total time elapsed")
-print("--- %s seconds ---" % (time.time() - start_time))
+# print("Total time elapsed")
+# print("--- %s seconds ---" % (time.time() - start_time))
 #- --------------------------------------------------------------------------|
 
 #Generate dataset for clustering---------------------------------------------|
 
-p_size = 6000
-s_size = 5000
-interval = [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0, 0]
-polcurves = fuelcell1.data_gen(p_size, 
-                                s_size, params, 
-                                params_names3, 
-                                interval)
+# p_size = 6000
+# s_size = 5000
+# interval = [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0, 0]
+# polcurves = fuelcell1.data_gen(p_size, 
+#                                 s_size, params, 
+#                                 params_names3, 
+#                                 interval)
 
 #--------------------------------End of main--------------------------------##

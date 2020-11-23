@@ -83,23 +83,13 @@ def conductivityIo(T, IEC):
 
 # #User define function to visualize results------------------------------------#
 
-def visualize(v1_min1, v1_max1, v2_min1, v2_max1, v1_min2, v1_max2, v2_min2, v2_max2, model1, model2, xlabel, ylabel):
-
-    samples1 = np.zeros((1, 3))
-    
-    T = np.linspace(v1_min1, v1_max1, 200)
-    DFs = np.linspace(v2_min1, v2_max1, 200)
-    
-    for t in T:
-        for df in DFs:     
-            sigma_io_i = model1(t, df)
-            samples1 = np.row_stack([samples1, (t, df, sigma_io_i.item())])
-    
-    samples1 = np.delete(samples1, (0), axis=0)
-    
+def visualize(T_min1, T_max1, DF_min1, DF_max1, T_min2, T_max2, DF_min2, DF_max2, model1, model2, xlabel, ylabel):
+   
     fig = plt.figure(figsize=(30, 25))
     
     axs = fig.add_subplot(2, 2, 1)
+    
+    #Fitness Membrane
     
     axs.scatter(y, sigma_pred, s = 500, facecolors='none', edgecolors='r')
     axs.plot(y, y, color = 'k')
@@ -109,6 +99,7 @@ def visualize(v1_min1, v1_max1, v2_min1, v2_max1, v1_min2, v1_max2, v2_min2, v2_
     axs.set_title(' ')
     axs.tick_params(direction = 'in', pad = 20)
     
+    #Fitness ionomer
     axs = fig.add_subplot(2, 2, 3)
     axs.scatter(y0_io, sigma_io_pred, s = 500, facecolors='none', edgecolors='r')
     axs.plot(y0_io, y0_io, color = 'k')
@@ -118,21 +109,26 @@ def visualize(v1_min1, v1_max1, v2_min1, v2_max1, v1_min2, v1_max2, v2_min2, v2_
     axs.set_title(' ')
     axs.tick_params(direction = 'in', pad = 20)
     
-    samples1 = np.zeros((1, 3))
-    
-    T = np.linspace(25, 220, 200)
-    DFs = np.linspace(1.7, 5.4, 200)
+    #Predictions membrane
+    samples1 = np.zeros((201, ))
+    samplesDF = np.zeros((1, ))
+    T = np.linspace(T_min1, T_max1, 200)
+    DFs = np.linspace(DF_min1, DF_max1, 200)
     
     for t in T:
         for df in DFs:     
-            sigma_io_i = conductivityMem(t, df)
-            samples1 = np.row_stack([samples1, (t, df, sigma_io_i.item())])
+            sigma_mem_i = conductivityMem(t, df)
+            samplesDF = np.row_stack([samplesDF, (sigma_mem_i.item())])
+        samples1 = np.column_stack((samples1, np.flipud(samplesDF)))
+        samplesDF = np.zeros((1, ))
     
-    samples1 = np.delete(samples1, (0), axis=0)
+    samples1 = np.delete(samples1, (-1), axis=0)
+    samples1 = np.delete(samples1, (0), axis=1)
+    
     
     axs = fig.add_subplot(2, 2, 2)
     
-    mem = plt.contourf(T, DFs, samples1[: , 2].reshape(200, 200))
+    mem = plt.contourf(T, DFs, samples1)
     axs.text(0.05, 0.95, '(b)', fontsize = 'x-large', horizontalalignment='left',verticalalignment='top', transform=axs.transAxes)
     axs.tick_params(direction = 'in', pad = 20)
     membar = plt.colorbar(mem)
@@ -141,21 +137,26 @@ def visualize(v1_min1, v1_max1, v2_min1, v2_max1, v1_min2, v1_max2, v2_min2, v2_
     axs.set_xlabel(xlabel, fontsize = 'x-large', labelpad = 10)
     axs.set_ylabel(ylabel, fontsize = 'x-large', labelpad = 10)
     
-    samples2 = np.zeros((1, 3))
     
-    T = np.linspace(25, 200, 200)
-    DFs = np.linspace(0.97, 1.96, 200)
+    #Predictions ionomer
+    samples2 = np.zeros((201, ))
+    samplesDF = np.zeros((1, ))
+    T = np.linspace(T_min2, T_max2, 200)
+    DFs = np.linspace(DF_min2, DF_max2, 200)
     
     for t in T:
         for df in DFs:     
             sigma_io_i = conductivityIo(t, df)
-            samples2 = np.row_stack([samples2, (t, df, sigma_io_i.item())])
+            samplesDF = np.row_stack([samplesDF, (sigma_io_i.item())])
+        samples2 = np.column_stack((samples2, np.flipud(samplesDF)))
+        samplesDF = np.zeros((1, ))
     
-    samples2 = np.delete(samples2, (0), axis=0)
+    samples2 = np.delete(samples2, (-1), axis=0)
+    samples2 = np.delete(samples2, (0), axis=1)
     
     axs = fig.add_subplot(2, 2, 4)
     
-    io = plt.contourf(T, DFs, samples2[: , 2].reshape(200, 200))
+    io = plt.contourf(T, DFs, np.flipud(samples2))
     axs.text(0.05, 0.95, '(d)', fontsize = 'x-large', horizontalalignment='left',verticalalignment='top', transform=axs.transAxes)
     axs.tick_params(direction = 'in', pad = 20)
     iobar = plt.colorbar(io)
@@ -164,14 +165,15 @@ def visualize(v1_min1, v1_max1, v2_min1, v2_max1, v1_min2, v1_max2, v2_min2, v2_
     axs.set_xlabel(xlabel, fontsize = 'x-large', labelpad = 10)
     axs.set_ylabel(ylabel, fontsize = 'x-large', labelpad = 10)
     
+    #Additional formatting
     axs.tick_params(pad = 10, grid_alpha = 0.3, direction = 'in')
     axs.set_autoscale_on
     plt.rcParams['font.family']='sans-serif'
     tnfont={'fontname':'Helvetica'}
     plt.rcParams['font.size']=30
     plt.tight_layout()
-    plt.savefig('Materials.pdf')
-    plt.savefig('Materials.png', transparent=True)
+    plt.savefig('Figure S4.pdf')
+    plt.savefig('Figure S4.png', transparent=True)
     plt.show()
     
     return samples1, samples2
@@ -179,4 +181,5 @@ def visualize(v1_min1, v1_max1, v2_min1, v2_max1, v1_min2, v1_max2, v2_min2, v2_
 #End of visualization--------------------------------------------------------#
 
 samples = visualize(25, 220, 1.7, 5.4, 25, 200, 0.97, 1.96, conductivityMem, conductivityIo, 'Temperature (°C)', 'IEC (mequiv/g)')
+
 
