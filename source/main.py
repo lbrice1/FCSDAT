@@ -269,10 +269,26 @@ print('Jaya completed')
     
 #- --------------------------------------------------------------------------|
 
-# params = g3_mean[0:k3]
+params = g3_mean[0:k3]
 
-# polCurves = fuelcell1.showFit(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
+polCurves = fuelcell1.showFit(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
 
+figDC = plt.Figure(figsize=(30, 25))
+I = np.linspace(0.01, 12, 100)
+plt.plot(I/A, polCurves[0, 8, :], label = 'Cathode')
+plt.plot(I/A, polCurves[0, 7, :], label = 'Anode')
+plt.plot(I/A, polCurves[0, 8, :] + polCurves[0, 7, :], label = 'Total')
+plt.legend(fontsize = 'xx-small', loc='lower right', ncol = 1)  
+plt.rcParams['font.family']='sans-serif'
+tnfont={'fontname':'Helvetica'}
+plt.rcParams['font.size']=12
+plt.xlabel('Current density $(A/cm^2)$')
+plt.ylabel('Voltage $(V)$')
+plt.tight_layout()
+plt.tick_params(direction = 'in')
+plt.savefig('ActvationOverpotentials.pdf')
+plt.savefig('ActivationOverpotentials.png')
+plt.show()
 # #Global sensitivity analysis of variables
 
 # N = 100

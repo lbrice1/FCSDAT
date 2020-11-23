@@ -100,6 +100,8 @@ class Fuelcell:
         E_low = []
         Eoc = []
         Eact = []
+        Eact_an = []
+        Eact_cat = []
         Econ = []
         Eohm = []
         Power = []
@@ -159,9 +161,9 @@ class Fuelcell:
             
             i0_an_CO     = i0_an_H2*(1 - thetaCO)**2
             
-            Eact_an      = R1*T/alpha_an_H2/F*log(i/i0_an_CO)   #V
-            Eact_cat     = R1*T/alpha_cat/F*log(i/i0_cat)       #V
-            Eact_i       = Eact_an + Eact_cat                   #V
+            Eact_an_i      = R1*T/alpha_an_H2/F*log(i/i0_an_CO)   #V
+            Eact_cat_i     = R1*T/alpha_cat/F*log(i/i0_cat)       #V
+            Eact_i         = Eact_an_i + Eact_cat_i               #V
                     
             i_max_cat     = Kappa_cat*D_O2_PBI*PO2/T/delta_io                 #A/cm^2
             i_max_an      = Kappa_an*D_H2_PBI*PH2/T/delta_io*(1 - thetaCO)**2 #A/cm^2
@@ -185,6 +187,8 @@ class Fuelcell:
             E_low.append(np.asscalar(E_i_low))
             Eoc.append(Eoc_i)
             Eact.append(np.asscalar(Eact_i))
+            Eact_an.append(np.asscalar(Eact_an_i))
+            Eact_cat.append(np.asscalar(Eact_cat_i))
             Econ.append(np.asscalar(Econ_i))
             Eohm.append(np.asscalar(Eohm_i))
             Power.append(Power_i.astype(float))
@@ -217,7 +221,7 @@ class Fuelcell:
             plt.show()
             
 
-        return Eoc, E, Eact, Econ, Eohm, E_up, E_low
+        return Eoc, E, Eact, Econ, Eohm, E_up, E_low, Eact_an, Eact_cat
     
     def showFit(self, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names, graphs = False, overpotential = 'E'):
         I = np.linspace(0.01, 12, 100)
