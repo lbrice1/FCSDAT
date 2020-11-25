@@ -293,7 +293,7 @@ plt.rcParams['font.family']='sans-serif'
 tnfont={'fontname':'Helvetica'}
 plt.rcParams['font.size']=40
 plt.xlabel('Current density $(A/cm^2)$')
-plt.ylabel('Voltage $(V)$')
+plt.ylabel('$\eta_{act}$ $(V)$')
 plt.tick_params(direction = 'in')
 plt.savefig('Figure S5.pdf')
 plt.savefig('Figure S5.png')
