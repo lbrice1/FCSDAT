@@ -277,27 +277,26 @@ fig, ax1 = plt.subplots(figsize = (18, 13))
 
 I = np.linspace(0.01, 12, 100)
 ax1.plot(I/A, polCurves[0, 8, :], label = 'Cathode, T = 473', color = 'purple', linewidth = 3, linestyle = '-.')
-ax1.plot(I/A, polCurves[0, 7, :], label = 'Anode, T = 473', color = 'teal', linewidth = 3, linestyle = '-.')
+ax1.plot(I/A, (polCurves[0, 7, :]), label = 'Anode, T = 473', color = 'teal', linewidth = 3, linestyle = '-.')
 ax1.plot(I/A, polCurves[0, 8, :] + polCurves[0, 7, :], label = 'Total, T = 473', color = 'limegreen', linewidth = 3, linestyle = '-.')
 
 ax1.plot(I/A, polCurves[1, 8, :], label = 'Cathode, T = 493', color = 'purple', linewidth = 3, linestyle = ':')
-ax1.plot(I/A, polCurves[1, 7, :], label = 'Anode, T = 493', color = 'teal', linewidth = 3, linestyle = ':')
+ax1.plot(I/A, (polCurves[1, 7, :]), label = 'Anode, T = 493', color = 'teal', linewidth = 3, linestyle = ':')
 ax1.plot(I/A, polCurves[1, 8, :] + polCurves[0, 7, :], label = 'Total, T = 493', color = 'limegreen', linewidth = 3, linestyle = ':')
 
 ax1.plot(I/A, polCurves[2, 8, :], label = 'Cathode, CO/H2 = 0.25', color = 'purple', linewidth = 3)
-ax1.plot(I/A, polCurves[2, 7, :], label = 'Anode, CO/H2 = 0.25', color = 'teal', linewidth = 3)
+ax1.plot(I/A, (polCurves[2, 7, :]), label = 'Anode, CO/H2 = 0.25', color = 'teal', linewidth = 3)
 ax1.plot(I/A, polCurves[2, 8, :] + polCurves[0, 7, :], label = 'Total, CO/H2 = 0.25', color = 'limegreen', linewidth = 3)
 
-plt.legend(fontsize = 'xx-small', loc='lower right', ncol = 2)  
+plt.legend(fontsize = 20, loc='lower right', ncol = 3)  
 plt.rcParams['font.family']='sans-serif'
 tnfont={'fontname':'Helvetica'}
 plt.rcParams['font.size']=40
 plt.xlabel('Current density $(A/cm^2)$')
 plt.ylabel('Voltage $(V)$')
-plt.tight_layout()
 plt.tick_params(direction = 'in')
-plt.savefig('ActvationOverpotentials.pdf')
-plt.savefig('ActivationOverpotentials.png')
+plt.savefig('Figure S5.pdf')
+plt.savefig('Figure S5.png')
 plt.tight_layout()
 plt.show()
 # #Global sensitivity analysis of variables
