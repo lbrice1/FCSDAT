@@ -212,7 +212,7 @@ class Fuelcell:
             plt.rcParams['font.family']='sans-serif'
             tnfont={'fontname':'Helvetica'}
             plt.rcParams['font.size']=35
-            plt.xlabel('Current intensity $(A/cm^2)$')
+            plt.xlabel('Current density $(A/cm^2)$')
             plt.ylabel('Voltage $(V)$')
             plt.tight_layout()
             plt.tick_params(direction = 'in')
@@ -388,7 +388,7 @@ class Fuelcell:
         plt.rcParams['font.family']='sans-serif'
         tnfont={'fontname':'Helvetica'}
         plt.rcParams['font.size']=35
-        ax1.set_xlabel('Current intensity $(A/cm^2)$')
+        ax1.set_xlabel('Current density $(A/cm^2)$')
         ax1.set_ylabel('Voltage $(V)$')
         ax2.set_ylabel('Power density $(W/cm^2)$')
         plt.tick_params(direction = 'in')
