@@ -3,4 +3,12 @@ Datasets and code to accompany Briceno-Mena, Luis A. and Venugopalan, Gokul and 
 
 Run and call other methods in fuelcell.py and membrane.py from main.py
 
+If you find this code useful in your research, please consider citing:
 
+
+@inproceedings{plummerCITE2018,
+Author = { },
+Title = {C },
+Booktitle  = { },
+Year = { }
+}
