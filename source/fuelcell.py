@@ -7,10 +7,12 @@ Created on Tue Jul 14 16:11:22 2020
 
 import numpy as np
 from numpy import sqrt, exp, log
+import scipy.stats as sps
 import matplotlib.pyplot as plt
 import pandas as pd
 import random
 from datetime import date
+import time
 
 
 from membrane import conductivityMem
@@ -38,6 +40,16 @@ class Fuelcell:
         
         self.Nq = None
         self.NTq = None
+
+        #Cell Fitted parameters
+        self.i0_an_H2_ref  = 0.144           #A/cm^2
+        self.i0_cat_ref    = 2.63e-8         #A/cm^2
+        self.alpha_an_H2   = 0.97            #dimensionless
+        self.alpha_cat     = 1.02            #dimensionless
+        self.eta           = 4.95            #dimensionless
+        
+        self.B             = 0.09            #V
+        self.Kappa_cat     = 1.99e7          #K-A-s/cm^3-atm
         
     #Operate de fuel cell at given conditions
 
@@ -201,7 +213,7 @@ class Fuelcell:
             E_exp1 = np.asarray(pd.DataFrame(data1, columns=['E (V) 220']))
             E_exp1 = E_exp1[~np.isnan(E_exp1).any(axis=1)]
             
-            fig, ax1 = plt.subplots(figsize = (15, 11))
+            fig, ax1 = plt.subplots(figsize = (8, 8))
             ax1.plot(I/A, E, label = 'Model', linewidth = 3, color = 'teal')
             ax1.fill_between(np.reshape(I/A, (17,)), E_up, E_low, color = 'teal', alpha = 0.2)
             ax1.scatter(J1, E_exp1, label = 'Experimental (220 °C, 1.6 atm)', marker = 'D', color = 'limegreen')
@@ -211,13 +223,13 @@ class Fuelcell:
             plt.legend(fontsize = 'xx-small', loc='upper right', ncol = 3)  
             plt.rcParams['font.family']='sans-serif'
             tnfont={'fontname':'Helvetica'}
-            plt.rcParams['font.size']=35
+            plt.rcParams['font.size']=25
             plt.xlabel('Current density $(A/cm^2)$')
             plt.ylabel('Voltage $(V)$')
             plt.tight_layout()
             plt.tick_params(direction = 'in')
-            plt.savefig('Operation.pdf')
-            plt.savefig('Operation.png')
+            plt.savefig('../figures/Operation.pdf')
+            plt.savefig('../figures/Operation.png')
             plt.show()
             
 
@@ -266,7 +278,7 @@ class Fuelcell:
         overpotentialsLabelsDict = {'$E_{oc}$': 0, 'E': 1, '$E_{act}$': 2, '$E_{con}$': 3, '$E_{ohm}$': 4, 'Contributions': 5, 'Power' : 6}
         reverseoverpotentialsLabelsDict = {w: r for r, w in overpotentialsLabelsDict.items()}
         
-        plt.figure(figsize = (15, 11))
+        plt.figure(figsize = (10, 8))
         
         colormap = ['teal', 'limegreen', 'purple' ]
         
@@ -276,8 +288,7 @@ class Fuelcell:
         for p in range(len(tags)):
             plt.fill_between(np.reshape(I/self.A, (len(I),)), polCurves[p, 5, :], polCurves[p, 6, :], color = colormap[p], alpha = 0.2)
             labels.append('Model ' + temp[p])
-            
-        angle = 30
+
         
         plt.text(0.25, 0.3, 'Activation overpotentials', fontsize = 'medium', rotation=20)
         plt.text(1.0, 0.11, 'Concentration overpotentials', fontsize = 'medium', rotation=20)
@@ -299,16 +310,16 @@ class Fuelcell:
         
         plt.ylim(0, 1.0)
         plt.xlim(0, 2.5)
-        plt.legend(labels, loc='upper right', ncol = 2, fontsize = 'medium', fancybox=True)  
+        plt.legend(labels, loc='upper right', ncol = 2, fontsize = 'small', fancybox=True)  
         plt.rcParams['font.family']='sans-serif'
         tnfont={'fontname':'Helvetica'}
-        plt.rcParams['font.size']=35
-        plt.xlabel('Current density $(A/cm^2)$', fontsize = 30)
-        plt.ylabel('Voltage $(V)$', fontsize = 30)
+        plt.rcParams['font.size']=15
+        plt.xlabel('Current density $(A/cm^2)$', fontsize = 15)
+        plt.ylabel('Voltage $(V)$', fontsize = 15)
         plt.tick_params(direction = 'in', labelsize = 'small')
         plt.tight_layout()
-        plt.savefig('Fitness.pdf') 
-        plt.savefig('Fitness.png', transparent = True)
+        plt.savefig('../figures/Polarization curve.pdf') 
+        plt.savefig('../figures/Polarization curve.png', transparent = True)
         plt.show()
         
         return polCurves
@@ -363,7 +374,7 @@ class Fuelcell:
         overpotentialsLabelsDict = {'$E_{oc}$': 0, '$E$': 1, '$E_{act}$': 2, '$E_{con}$': 3, '$E_{ohm}$': 4, 'Contributions': 5, 'Power' : 6}
         reverseoverpotentialsLabelsDict = {w: r for r, w in overpotentialsLabelsDict.items()}
         
-        fig, ax1 = plt.subplots(figsize = (20, 15))
+        fig, ax1 = plt.subplots(figsize = (12, 8))
         
         colormap = ['r', 'b', 'g', 'c', 'y', 'm']
         
@@ -377,7 +388,6 @@ class Fuelcell:
         for p in range(len(tags)):
             ax2.plot(I/self.A, polCurves[p, 1, :]*I/self.A, linewidth = 3, color = colormap[p])
             labels.append(temp[p])
-            
         
         labels = [item for item in labels]
         
@@ -387,13 +397,14 @@ class Fuelcell:
         ax1.legend(labels, fontsize = 'xx-small', loc='upper right', ncol = 3)  
         plt.rcParams['font.family']='sans-serif'
         tnfont={'fontname':'Helvetica'}
-        plt.rcParams['font.size']=35
+        plt.rcParams['font.size']=15
         ax1.set_xlabel('Current density $(A/cm^2)$')
         ax1.set_ylabel('Voltage $(V)$')
         ax2.set_ylabel('Power density $(W/cm^2)$')
         plt.tick_params(direction = 'in')
         plt.tight_layout()
-        plt.savefig('Exploration.pdf') 
+        plt.savefig('../figures/Exploration.pdf') 
+        plt.savefig('../figures/Exploration.png')
         plt.show()
         
         return polCurves
@@ -671,7 +682,7 @@ class Fuelcell:
         STjs_labels = [reverseparamsDictLabels[item] for item in STjs_labels]
         STjs_labels = np.array(STjs_labels)
         
-        fig = plt.figure(figsize = (15, 15))
+        fig = plt.figure(figsize = (8, 8))
         ax1 = fig.add_subplot(211)
         ax1.set_ylabel('$S_j$')
         ax1.bar(Sjs_labels[:], gsa[:, 1].astype(np.float), color = 'rebeccapurple', alpha = 0.6)
@@ -685,8 +696,8 @@ class Fuelcell:
         plt.rcParams['font.size']=25
         plt.tick_params(direction = 'in')
         plt.tight_layout()
-        plt.savefig('gsa.pdf')  
-        plt.savefig('gsa.png')
+        plt.savefig('../figures/gsa.pdf')  
+        plt.savefig('../figures/gsa.png')
         plt.show()
             
    
@@ -695,7 +706,7 @@ class Fuelcell:
         return True
     
     #Plot results
-    def plotgsaV(self, gsa, var_names, params_names, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params = [0.144, 2.63e-8, 1, 1, 4.8, 0.09, 2.0e7]):
+    def plotgsaV(self, gsa, var_names, params_names, params = [0.144, 2.63e-8, 1, 1, 4.8, 0.09, 2.0e7]):
         
         
         varsDict = {var_names[0]: 0, 
@@ -733,7 +744,7 @@ class Fuelcell:
         STjs_labels = [reversevarsDictLabels[item] for item in STjs_labels]
         STjs_labels = np.array(STjs_labels)
         
-        fig = plt.figure(figsize = (20, 20))
+        fig = plt.figure(figsize = (12, 8))
         ax1 = fig.add_subplot(211)
         ax1.set_ylabel('$S_j$')
         ax1.bar(Sjs_labels[:], gsa[:, 1].astype(np.float), color = 'rebeccapurple', alpha = 0.6)
@@ -745,10 +756,10 @@ class Fuelcell:
         plt.rcParams['font.family']='sans-serif'
         tnfont={'fontname':'Helvetica'}
         plt.rcParams['font.size']=25
-        plt.tick_params(direction = 'in')
+        plt.tick_params(direction = 'out')
         plt.tight_layout()
-        plt.savefig('gsaV.pdf') 
-        plt.savefig('gsaV.png') 
+        plt.savefig('../figures/gsaV.pdf') 
+        plt.savefig('../figures/gsaV.png') 
         plt.show()
 
         return True
@@ -884,4 +895,269 @@ class Fuelcell:
         FuelCellModelData = FuelCellModelData[(FuelCellModelData.T != 0).any()]
         today = date.today()
         FuelCellModelData.to_excel(f'DataSample {s_size} points {today}.xlsx', index=True, header=True)
+        
         return polCurves
+    
+    def performGSA(self, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names):
+        N = 100
+        u = 0.01
+
+        #Perform GSA
+        print('Performing GSA...')
+
+        #Build the random matrices M1, M2, M3 using Monte Carlo
+        self.M1 = (self.sampling_matrix(params, N, u).transpose())
+        self.M2 = (self.sampling_matrix(params, N, u).transpose())
+        self.M3 = (self.sampling_matrix(params, N, u).transpose())
+
+        gsa = self.gsa(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, 
+                            CO_H2, L_c, params, N, params_names)
+
+        while any(t < 0 for t in gsa.flatten()):
+            self.M1 = (self.sampling_matrix(params, N, u).transpose())
+            self.M2 = (self.sampling_matrix(params, N, u).transpose())
+            self.M3 = (self.sampling_matrix(params, N, u).transpose())
+
+            gsa = self.gsa(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, 
+                                delta_io, CO_H2, L_c, params, N, params_names)
+            
+        self.plotgsa(gsa, params_names, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, 
+                        delta_io, CO_H2, L_c, params)
+
+        print('GSA completed')
+        #print("Time for GSA")
+        #print("--- %s seconds ---" % (time.time() - start_time))
+        #lap_time = time.time()
+
+        return gsa
+
+    def performJaya(self, params, gsa, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, 
+                                    delta_io, CO_H2, L_c):
+        print('Performing Jaya...')
+        #Initialization
+        N = 100
+        u = 0.01
+        max_it = 10
+        tol = 0.01
+        w = 10
+        z = max_it + 1 + len(params)
+        r = 0.3
+        confidence = 0.95
+
+        g1 = np.zeros((w, max_it + 4))
+        g2 = np.zeros((w, max_it + 6))
+        g3 = np.zeros((w, max_it + 8))
+        g4 = np.zeros((w, max_it + 8))
+
+        lap_time = time.time()
+        params_base = [0.144, 2.63e-8, 1, 1, 4.8, 0.09, 2.0e7]
+
+        for j in range(w):
+            k1 = 3
+            gsa_params = self.get_params(gsa, k1, params_base)
+            params_names1 = gsa_params[0]
+            params = gsa_params[1]
+            
+            self.M1 = (self.sampling_matrix(params, N, u).transpose())
+
+            g1[j, :] = self.jaya(self.M1, self.M3, N, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, 
+                                    delta_io, CO_H2, L_c, params, params_names1, max_it, tol, r)
+
+        g1_mean = np.mean(g1, axis = 0)
+
+        print("Time for Jaya sequential with 3 parameters completed")
+        print("--- %s seconds ---" % (time.time() - lap_time))
+        lap_time = time.time()
+            
+        for j in range(w):
+            k2 = 5
+            gsa_params = self.get_params(gsa, k2, params_base)
+            params_names2 = gsa_params[0]
+            params = gsa_params[1]
+            
+            self.M1 = (self.sampling_matrix(params, N, u).transpose())
+            
+            g2[j, :] = self.jaya(self.M1, self.M3, N, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, 
+                                    delta_io, CO_H2, L_c, params, params_names1, max_it, tol, r)
+
+        g2_mean = np.mean(g2, axis = 0)
+
+        print("Time for Jaya sequential with 5 parameters completed")
+        print("--- %s seconds ---" % (time.time() - lap_time))
+        lap_time = time.time()
+
+        for j in range(w):
+            
+            k3 = 7
+            gsa_params = self.get_params(gsa, k3, params_base)
+            params_names3 = gsa_params[0]
+            params = gsa_params[1]
+            
+            self.M1 = (self.sampling_matrix(params, N, u).transpose())
+            
+            g3[j, :] = self.jaya(self.M1, self.M3, N, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, 
+                                    delta_io, CO_H2, L_c, params, params_names1, max_it, tol, r)
+
+        g3_mean = np.mean(g3, axis = 0)
+
+        print("Jaya sequential with 5 parameters completed")
+        #print("--- %s seconds ---" % (time.time() - lap_time))
+        #lap_time = time.time()
+
+        #Obtain standard error of the mean
+        g1_sem = np.zeros((max_it + k1 + 1))
+        for j in range((max_it + k1 + 1)):
+            g1_sem[j] = sps.sem(g1[:, j], axis = 0)
+
+        g2_sem = np.zeros((max_it + k2 + 1))
+        for j in range((max_it + k2 + 1)):
+            g2_sem[j] = sps.sem(g2[:, j], axis = 0)
+        
+        g3_sem = np.zeros((max_it + k3 + 1))
+        for j in range((max_it + k3 + 1)):
+            g3_sem[j] = sps.sem(g3[:, j], axis = 0)
+            
+        #Obtain confidence interva limits
+        h1 = g1_sem*sps.t.ppf((1 + confidence) / 2, w - 1)
+        h2 = g2_sem*sps.t.ppf((1 + confidence) / 2, w - 1)
+        h3 = g3_sem*sps.t.ppf((1 + confidence) / 2, w - 1)
+
+        #Plot results Confidence intervals
+        plt.figure(figsize = (10, 8))
+
+        g1_u = g1_mean + h1
+        g2_u = g2_mean + h2
+        g3_u = g3_mean + h3
+
+        g1_l = g1_mean - h1
+        g2_l = g2_mean - h2
+        g3_l = g3_mean - h3
+
+        obj_func_values1 = g1_mean[k1:-1]
+        obj_func_values1_u = g1_u[k1:-1]
+        obj_func_values1_l = g1_l[k1:-1]
+
+        obj_func_values2 = g2_mean[k2:-1]
+        obj_func_values2_u = g2_u[k2:-1]
+        obj_func_values2_l = g2_l[k2:-1]
+
+        obj_func_values3 = g3_mean[k3:-1]
+        obj_func_values3_u = g3_u[k3:-1]
+        obj_func_values3_l = g3_l[k3:-1]
+
+        x_coord = np.arange(1, max_it + 1)
+
+        plt.plot(x_coord, obj_func_values1, label = '3 parameters', color = 'purple')
+        plt.fill_between(x_coord, obj_func_values1_u, obj_func_values3_l, color = 'purple', alpha = 0.2)
+
+        plt.plot(x_coord, obj_func_values2, label = '5 parameters', color = 'teal')
+        plt.fill_between(x_coord, obj_func_values2_u, obj_func_values2_l, color = 'teal', alpha = 0.2)
+
+        plt.plot(x_coord, obj_func_values3, label = '7 parameters', color = 'limegreen')
+        plt.fill_between(x_coord, obj_func_values3_u, obj_func_values3_l, color = 'limegreen', alpha = 0.2)
+
+        plt.legend(fontsize = 'small', loc='upper right')
+        plt.rcParams['font.family']='sans-serif'
+        tnfont={'fontname':'Helvetica'}
+        plt.rcParams['font.size']=20
+        plt.xlabel('Number of iterations')
+        plt.ylabel('Standard Error')
+        plt.xlim(1, max_it)
+        plt.tick_params(direction = 'in')
+        plt.tight_layout()
+
+        plt.savefig('../figures/Jaya.pdf')  #Comment in to save the figure as .pdf
+        plt.savefig('../figures/Jaya.png')  #Comment in to save the figure as .png
+        plt.show()
+
+        print('Jaya completed')
+
+        return g3_mean[0:k3], params_names3
+    
+    def plotActivation(self, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3):
+        #params = g3_mean[0:k3]
+
+        polCurves = self.showFit(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
+
+        fig, ax1 = plt.subplots(figsize = (10, 8))
+
+        A = 5
+
+        I = np.linspace(0.01, 12, 100)
+        ax1.plot(I/A, polCurves[0, 8, :], label = 'Cathode, T = 473', color = 'purple', linewidth = 3, linestyle = '-.')
+        ax1.plot(I/A, (polCurves[0, 7, :]), label = 'Anode, T = 473', color = 'teal', linewidth = 3, linestyle = '-.')
+        ax1.plot(I/A, polCurves[0, 8, :] + polCurves[0, 7, :], label = 'Total, T = 473', color = 'limegreen', linewidth = 3, linestyle = '-.')
+
+        ax1.plot(I/A, polCurves[1, 8, :], label = 'Cathode, T = 493', color = 'purple', linewidth = 3, linestyle = ':')
+        ax1.plot(I/A, (polCurves[1, 7, :]), label = 'Anode, T = 493', color = 'teal', linewidth = 3, linestyle = ':')
+        ax1.plot(I/A, polCurves[1, 8, :] + polCurves[0, 7, :], label = 'Total, T = 493', color = 'limegreen', linewidth = 3, linestyle = ':')
+
+        ax1.plot(I/A, polCurves[2, 8, :], label = 'Cathode, CO/H2 = 0.25', color = 'purple', linewidth = 3)
+        ax1.plot(I/A, (polCurves[2, 7, :]), label = 'Anode, CO/H2 = 0.25', color = 'teal', linewidth = 3)
+        ax1.plot(I/A, polCurves[2, 8, :] + polCurves[0, 7, :], label = 'Total, CO/H2 = 0.25', color = 'limegreen', linewidth = 3)
+
+        plt.legend(fontsize = 8, loc='lower right', ncol = 3)  
+        plt.rcParams['font.family']='sans-serif'
+        tnfont={'fontname':'Helvetica'}
+        plt.rcParams['font.size']=15
+        plt.xlabel('Current density $(A/cm^2)$')
+        plt.ylabel('$\eta_{act}$ $(V)$')
+        plt.tick_params(direction = 'in')
+        plt.savefig('../figures/Figure S5.pdf')  #Comment in to save the figure as .pdf
+        plt.savefig('../figures/Figure S5.png')  #Comment in to save the figure as .png
+        plt.tight_layout()
+        plt.show()
+
+        return None
+    
+    def performGSA_V(self, I, variables, var_names, params, params_names3):
+
+        N = 100
+        u = 0.4
+
+        #Perform GSA
+        print('Performing GSA...')
+
+        #Build the random matrices M1, M2, M3 using Monte Carlo
+        self.M1 = (self.sampling_matrix(variables, N, u).transpose())
+        self.M2 = (self.sampling_matrix(variables, N, u).transpose())
+        self.M3 = (self.sampling_matrix(variables, N, u).transpose())
+
+        gsaV = self.gsaV(I, variables, params, N, params_names3)
+
+        while any(t < 0 for t in gsaV.flatten()):
+            self.M1 = (self.sampling_matrix(variables, N, u).transpose())
+            self.M2 = (self.sampling_matrix(variables, N, u).transpose())
+            self.M3 = (self.sampling_matrix(variables, N, u).transpose())
+            
+            gsaV = self.gsaV(I, variables, params, N, params_names3)
+            
+            print('I tried')
+            
+        self.plotgsaV(gsaV, var_names, params_names3, params)
+
+        print('GSAV completed')
+        #print("Time for GSAV")
+        #print("--- %s seconds ---" % (time.time() - start_time))
+        #lap_time = time.time()
+
+        return None
+    
+    def performExplore(self, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3):
+
+        polCurves = self.exploreConfigs(I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names3, graphs = False, overpotential = 'Contributions')
+
+        
+        #print("Total time elapsed")
+        #print("--- %s seconds ---" % (time.time() - start_time))
+    
+    def performData_gen(self, p_size, s_size):
+        
+        p_size = 6000
+        s_size = 5000
+        interval = [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0, 0]
+        polcurves = self.data_gen(p_size, 
+                                        s_size, params, 
+                                        params_names3, 
+                                        interval)
+        return None

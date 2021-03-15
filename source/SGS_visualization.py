@@ -38,6 +38,6 @@ tnfont={'fontname':'Helvetica'}
 plt.rcParams['font.size']=25
 plt.tick_params(direction = 'in')
 plt.tight_layout()
-plt.savefig('SGScluster5.pdf') 
-plt.savefig('SGScluster5.png') 
+plt.savefig('../figures/SGScluster5.pdf') 
+plt.savefig('../figures/SGScluster5.png') 
 plt.show()

@@ -11,7 +11,7 @@ import os.path
 import pandas as pd
 
 #Set working source as working directory
-
+os.chdir('./source')
 def data_load(filename):
     os.chdir('..')
     d = os.getcwd()

@@ -85,13 +85,13 @@ def conductivityIo(T, IEC):
 
 def visualize(T_min1, T_max1, DF_min1, DF_max1, T_min2, T_max2, DF_min2, DF_max2, model1, model2, xlabel, ylabel):
    
-    fig = plt.figure(figsize=(30, 25))
+    fig = plt.figure(figsize=(10, 10))
     
     axs = fig.add_subplot(2, 2, 1)
     
     #Fitness Membrane
     
-    axs.scatter(y, sigma_pred, s = 500, facecolors='none', edgecolors='r')
+    axs.scatter(y, sigma_pred, s = 200, facecolors='none', edgecolors='r')
     axs.plot(y, y, color = 'k')
     axs.text(0.05, 0.95, '(a)', fontsize = 'x-large', horizontalalignment='left',verticalalignment='top', transform=axs.transAxes)
     axs.set_xlabel('$\kappa^{H^{+}}_{measured}$ (mS/cm)', fontsize = 'x-large', labelpad = 10)
@@ -101,7 +101,7 @@ def visualize(T_min1, T_max1, DF_min1, DF_max1, T_min2, T_max2, DF_min2, DF_max2
     
     #Fitness ionomer
     axs = fig.add_subplot(2, 2, 3)
-    axs.scatter(y0_io, sigma_io_pred, s = 500, facecolors='none', edgecolors='r')
+    axs.scatter(y0_io, sigma_io_pred, s = 200, facecolors='none', edgecolors='r')
     axs.plot(y0_io, y0_io, color = 'k')
     axs.text(0.05, 0.95, '(c)', fontsize = 'x-large', horizontalalignment='left',verticalalignment='top', transform=axs.transAxes)
     axs.set_xlabel('$\kappa^{H^{+}}_{measured}$ (mS/cm)', fontsize = 'x-large', labelpad = 10)
@@ -170,16 +170,16 @@ def visualize(T_min1, T_max1, DF_min1, DF_max1, T_min2, T_max2, DF_min2, DF_max2
     axs.set_autoscale_on
     plt.rcParams['font.family']='sans-serif'
     tnfont={'fontname':'Helvetica'}
-    plt.rcParams['font.size']=30
+    plt.rcParams['font.size']=25
     plt.tight_layout()
-    plt.savefig('Figure S4.pdf')
-    plt.savefig('Figure S4.png', transparent=True)
+    plt.savefig('../figures/Figure 2.pdf')
+    plt.savefig('../figures/Figure 2.png', transparent=True)
     plt.show()
     
     return samples1, samples2
     
 #End of visualization--------------------------------------------------------#
 
-samples = visualize(25, 220, 1.7, 5.4, 25, 200, 0.97, 1.96, conductivityMem, conductivityIo, 'Temperature (°C)', 'IEC (mequiv/g)')
+#samples = visualize(25, 220, 1.7, 5.4, 25, 200, 0.97, 1.96, conductivityMem, conductivityIo, 'Temperature (°C)', 'IEC (mequiv/g)')
 
 
