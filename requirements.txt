@@ -45,7 +45,7 @@ ipywidgets==7.5.1
 isort==4.3.21
 jdcal==1.4.1
 jedi @ file:///C:/ci/jedi_1592833825077/work
-Jinja2==2.11.2
+jinja2>=2.11.3
 joblib==0.16.0
 json5 @ file:///home/conda/feedstock_root/build_artifacts/json5_1591810480056/work
 jsonschema==3.2.0
@@ -53,7 +53,7 @@ jupyter==1.0.0
 jupyter-client @ file:///tmp/build/80754af9/jupyter_client_1594826976318/work
 jupyter-console==6.1.0
 jupyter-core==4.6.3
-jupyterlab==2.2.8
+jupyterlab>=2.2.10
 jupyterlab-server @ file:///home/conda/feedstock_root/build_artifacts/jupyterlab_server_1593951277307/work
 keyring @ file:///C:/ci/keyring_1593109799227/work
 kiwisolver==1.2.0
@@ -73,7 +73,7 @@ msgpack==1.0.0
 nbconvert==5.6.1
 nbformat==5.0.7
 nose==1.3.7
-notebook==6.0.3
+notebook>=6.4.1
 numpy==1.18.5
 numpydoc @ file:///tmp/build/80754af9/numpydoc_1594166760263/work
 olefile==0.46
@@ -100,7 +100,7 @@ pycparser @ file:///tmp/build/80754af9/pycparser_1594388511720/work
 pycryptodome @ file:///D:/bld/pycryptodome_1599089764058/work
 pydocstyle @ file:///tmp/build/80754af9/pydocstyle_1592848020240/work
 pyflakes==2.2.0
-Pygments==2.6.1
+Pygments>=2.7.4
 PyInstaller==3.6
 pylint @ file:///C:/ci/pylint_1592482039483/work
 PyNaCl @ file:///C:/ci/pynacl_1593121802951/work
@@ -114,10 +114,10 @@ python-dateutil==2.8.1
 python-jsonrpc-server @ file:///tmp/build/80754af9/python-jsonrpc-server_1594397536060/work
 python-language-server @ file:///C:/ci/python-language-server_1594162130238/work
 pytz==2020.1
-pywin32==227
+pywin32>=301
 pywin32-ctypes==0.2.0
 pywinpty==0.5.7
-PyYAML==5.3.1
+PyYAML>=5.4
 pyzmq==19.0.1
 QDarkStyle==2.8.1
 QtAwesome==0.7.2
@@ -159,7 +159,7 @@ tqdm==4.49.0
 traitlets==4.3.3
 typing-extensions @ file:///tmp/build/80754af9/typing_extensions_1598376058250/work
 ujson==1.35
-urllib3==1.25.9
+urllib3>=1.26.5
 watchdog @ file:///C:/ci/watchdog_1593447437088/work
 wcwidth @ file:///tmp/build/80754af9/wcwidth_1593447189090/work
 webencodings==0.5.1
