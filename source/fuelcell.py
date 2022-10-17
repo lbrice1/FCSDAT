@@ -14,6 +14,16 @@ import random
 from datetime import date
 import time
 
+from matplotlib.font_manager import FontProperties
+from matplotlib.patches import Circle, RegularPolygon
+from matplotlib.path import Path
+from matplotlib.projections import register_projection
+from matplotlib.projections.polar import PolarAxes
+from matplotlib import cm
+from matplotlib.pyplot import gca
+from matplotlib.spines import Spine
+from matplotlib.ticker import (AutoLocator, AutoMinorLocator,
+                               FormatStrFormatter, MultipleLocator)
 
 from membrane import conductivityMem
 from membrane import conductivityIo
@@ -51,7 +61,113 @@ class Fuelcell:
         self.B             = 0.09            #V
         self.Kappa_cat     = 1.99e7          #K-A-s/cm^3-atm
         
-    #Operate de fuel cell at given conditions
+    # #Operate de fuel cell at given conditions
+
+    # def __init__(self):
+
+        self.s = 75
+        self.marker = 's'
+        self.edgecolors = 'k'
+        self.alpha = 1.0
+        self.linewidths = 0.5
+        self.fontname = "Helvetica"
+        self.ax_linewidth_thick = 1.5
+        self.ax_linewidth_thin = 1.0
+        self.fontsize = 13
+        self.labelsize = 'x-large'
+        self.pad = 10
+        self.length_major = 9
+        self.length_minor = 5
+        self.width = 1.5
+
+        cmaps = {
+            'Dark2': cm.Dark2,
+            'viridis': cm.viridis,
+        }
+        self.colormap = 'Dark2'
+
+        self.cmap = cmaps[self.colormap]
+
+        self.palette = 'classic'
+
+    def set_palette(self, palette='classic'):
+        self.palette = palette
+
+        palette_options = {
+            'classic': [
+                'r', 'b', 'tab:green', 'deeppink', 'rebeccapurple',
+                'darkslategray', 'teal', 'lightseagreen'
+            ],
+            'autumn': ['darkorange', 'darkred', 'mediumvioletred']
+        }
+
+        self.colors = palette_options[self.palette]
+        return None
+
+    def ax_formatter(self, axis, smaller=False, crossval=False, xax=True, minor_ticks = True):
+
+        labelsize = self.labelsize
+        pad = self.pad
+        length_major = self.length_major
+        length_minor = self.length_minor
+        width = self.width
+
+        if smaller == True:
+            labelsize = 'medium'
+            pad = pad * 0.2
+            length_major = length_major * 0.75
+            length_minor = length_minor * 0.6
+            width = width * 0.6
+
+        if crossval is False:
+            if xax is True:
+                if minor_ticks:
+                    axis.xaxis.set_major_locator(AutoLocator())
+
+                
+                    axis.xaxis.set_minor_locator(AutoMinorLocator())
+            if minor_ticks:
+                axis.yaxis.set_major_locator(AutoLocator())
+            
+                axis.yaxis.set_minor_locator(AutoMinorLocator())
+
+        if xax is False:
+            width = 1.0
+        # if minor_ticks:
+        axis.tick_params(direction='out',
+                        pad=pad,
+                        length=length_major,
+                        width=width,
+                        labelsize=labelsize)
+    
+        axis.tick_params(which='minor',
+                        direction='out',
+                        pad=pad,
+                        length=length_minor,
+                        width=width,
+                        labelsize=labelsize)
+
+        for ax in ['top', 'bottom', 'left', 'right']:
+            axis.spines[ax].set_linewidth(self.ax_linewidth_thick)
+            axis.spines[ax].set_linewidth(self.ax_linewidth_thin)
+
+        if xax is True:
+            for tick in axis.get_xticklabels():
+                tick.set_fontname(self.fontname)
+        for tick in axis.get_yticklabels():
+            tick.set_fontname(self.fontname)
+
+        plt.rcParams['mathtext.fontset'] = 'cm'
+        plt.rcParams["font.family"] = "sans-serif"
+        # plt.rcParams["font.serif"] = ["Helvetica"
+        #                               ] + plt.rcParams["font.sans-serif"]
+        plt.rcParams['font.size'] = self.fontsize
+
+        if xax is True:
+            plt.legend(frameon=False)
+        plt.tight_layout()
+
+        return axis
 
     def operate(self, I, SH2, SO2, T, P, IEC_mem, IEC_io, delta_mem, delta_io, CO_H2, L_c, params, params_names, graphs = False, gsa = [0, 1, 2, 3, 4, 5, 6]):
         
@@ -278,45 +394,48 @@ class Fuelcell:
         overpotentialsLabelsDict = {'$E_{oc}$': 0, 'E': 1, '$E_{act}$': 2, '$E_{con}$': 3, '$E_{ohm}$': 4, 'Contributions': 5, 'Power' : 6}
         reverseoverpotentialsLabelsDict = {w: r for r, w in overpotentialsLabelsDict.items()}
         
-        plt.figure(figsize = (10, 8))
+        fig = plt.figure(figsize=(10, 8))
+
+        axs1 = fig.add_subplot(1, 1, 1)
         
         colormap = ['teal', 'limegreen', 'purple' ]
         
         for ip in range(1, overpotential):
             for p in range(len(tags)):
-                plt.plot(I/self.A, polCurves[p, ip, :], linestyle = linestyle[ip], linewidth = 3, color = colormap[p])
+                axs1.plot(I/self.A, polCurves[p, ip, :], linestyle = linestyle[ip], linewidth = 3, color = colormap[p])
         for p in range(len(tags)):
-            plt.fill_between(np.reshape(I/self.A, (len(I),)), polCurves[p, 5, :], polCurves[p, 6, :], color = colormap[p], alpha = 0.2)
+            axs1.fill_between(np.reshape(I/self.A, (len(I),)), polCurves[p, 5, :], polCurves[p, 6, :], color = colormap[p], alpha = 0.2)
             labels.append('Model ' + temp[p])
 
         
-        plt.text(0.25, 0.3, 'Activation overpotentials', fontsize = 'medium', rotation=20)
-        plt.text(1.0, 0.11, 'Concentration overpotentials', fontsize = 'medium', rotation=20)
-        plt.text(1.5, 0.05, 'Ohmic overpotentials', fontsize = 'medium', rotation=5)
+        axs1.text(0.25, 0.3, 'Activation overpotentials', fontsize = 'medium', rotation=20)
+        axs1.text(1.0, 0.11, 'Concentration overpotentials', fontsize = 'medium', rotation=20)
+        axs1.text(1.5, 0.05, 'Ohmic overpotentials', fontsize = 'medium', rotation=5)
 
         
         labels = [item for item in labels]
         
         labels.append('Overpotential (200 °C 0% CO)')          
-        plt.scatter(J2, E_exp2, label = 'Experimental (200 °C)', marker = '^', color = colormap[0])
+        axs1.scatter(J2, E_exp2, label = 'Experimental (200 °C)', marker = '^', color = colormap[0])
         
         labels.append('Overpotential (220 °C 0% CO)')          
-        plt.scatter(J1, E_exp1, label = 'Experimental (220 °C)', marker = 'x', color = colormap[1])
+        axs1.scatter(J1, E_exp1, label = 'Experimental (220 °C)', marker = 'x', color = colormap[1])
         
         labels.append('Overpotential (220 °C 25% CO)')          
-        plt.scatter(J3, E_exp3, label = 'Experimental (200 °C)', marker = '^', color = colormap[2])
+        axs1.scatter(J3, E_exp3, label = 'Experimental (200 °C)', marker = '^', color = colormap[2])
         
         
         
         plt.ylim(0, 1.0)
         plt.xlim(0, 2.5)
-        plt.legend(labels, loc='upper right', ncol = 2, fontsize = 'small', fancybox=True)  
-        plt.rcParams['font.family']='sans-serif'
-        tnfont={'fontname':'Helvetica'}
-        plt.rcParams['font.size']=15
-        plt.xlabel('Current density $(A/cm^2)$', fontsize = 15)
-        plt.ylabel('Voltage $(V)$', fontsize = 15)
-        plt.tick_params(direction = 'in', labelsize = 'small')
+        plt.legend(labels, loc='upper right', ncol = 2, fancybox=True)  
+        # plt.rcParams['font.family']='sans-serif'
+        # tnfont={'fontname':'Helvetica'}
+        # plt.rcParams['font.size']=15
+        axs1.set_xlabel(r'Current density (A/cm$^2$)')
+        axs1.set_ylabel('Voltage (V)')
+        # plt.tick_params(direction = 'in', labelsize = 'small')
+        axs1 = self.ax_formatter(axs1)
         plt.tight_layout()
         plt.savefig('../figures/Polarization curve.pdf') 
         plt.savefig('../figures/Polarization curve.png', transparent = True)
@@ -691,11 +810,12 @@ class Fuelcell:
         ax2.set_ylabel('$ST_j$')
         ax2.bar(STjs_labels[:], gsa[:, 3].astype(np.float), color = 'rebeccapurple', alpha = 0.6)
         
-        plt.rcParams['font.family']='sans-serif'
-        tnfont={'fontname':'Helvetica'}
-        plt.rcParams['font.size']=25
-        plt.tick_params(direction = 'in')
+        # plt.rcParams['font.family']='sans-serif'
+        # tnfont={'fontname':'Helvetica'}
+        # plt.rcParams['font.size']=25
+        # plt.tick_params(direction = 'in')
         plt.tight_layout()
+        ax1 = self.ax_formatter(ax1, minor_ticks=False)
         plt.savefig('../figures/gsa.pdf')  
         plt.savefig('../figures/gsa.png')
         plt.show()
@@ -722,7 +842,7 @@ class Fuelcell:
         
         reversevarsDict = {v: k for k, v in varsDict.items()}
         
-        var_names_labels = ['$SH_{2}}$', '$SO_{2}$', '$T$', '$P$', '$IEC_{mem}$', '$IEC_{io}$', '$\u03B4_{mem}$', '$\u03B4_{io}$', '$CO/H_{2}$', '$L_{c}$']
+        var_names_labels = ['SH$_{2}}$', 'SO$_{2}$', 'T', 'P', 'IEC$_{mem}$', 'IEC$_{io}$', '\u03B4$_{mem}$', '\u03B4$_{io}$', 'CO/H$_{2}$', 'L$_{c}$']
         varsDictLabels = {var_names_labels[0]: 0, 
                           var_names_labels[1]: 1, 
                           var_names_labels[2]: 2, 
@@ -744,19 +864,23 @@ class Fuelcell:
         STjs_labels = [reversevarsDictLabels[item] for item in STjs_labels]
         STjs_labels = np.array(STjs_labels)
         
-        fig = plt.figure(figsize = (12, 8))
+        fig = plt.figure(figsize = (7, 6))
         ax1 = fig.add_subplot(211)
-        ax1.set_ylabel('$S_j$')
+        ax1.set_ylabel('S$_j$')
         ax1.bar(Sjs_labels[:], gsa[:, 1].astype(np.float), color = 'rebeccapurple', alpha = 0.6)
         
         ax2 = fig.add_subplot(212)
-        ax2.set_ylabel('$ST_j$')
+        ax2.set_ylabel('ST$_j$')
         ax2.bar(STjs_labels[:], gsa[:, 3].astype(np.float), color = 'rebeccapurple', alpha = 0.6)
+
+        #ax1 = self.ax_formatter(ax1, minor_ticks=False)
+        #ax2 = self.ax_formatter(ax2, minor_ticks=False)
         
         plt.rcParams['font.family']='sans-serif'
-        tnfont={'fontname':'Helvetica'}
-        plt.rcParams['font.size']=25
-        plt.tick_params(direction = 'out')
+        # tnfont={'fontname':'Helvetica'}
+        #plt.rcParams['font.size']=25
+        # plt.tick_params(direction = 'out')
+        
         plt.tight_layout()
         plt.savefig('../figures/gsaV.pdf') 
         plt.savefig('../figures/gsaV.png') 

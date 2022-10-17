@@ -39,7 +39,7 @@ CO_H2       = 0         #adim
 
 #Cell design
 A           = 5         #cm^2
-IEC_mem     = 2.2        #%QPPSf
+IEC_mem     = 4.1        #%QPPSf
 IEC_io      = 1.72
 delta_mem   = 0.005     #cm
 delta_io    = 0.0001    #cm
